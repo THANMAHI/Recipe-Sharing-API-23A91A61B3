@@ -25,8 +25,8 @@ erDiagram
 
     users {
         int id PK
-        string username UNIQUE
-        string email UNIQUE
+        string username "UNIQUE"
+        string email "UNIQUE"
         string api_key_hash
         timestamp created_at
     }
@@ -45,25 +45,25 @@ erDiagram
 
     ingredients {
         int id PK
-        string name UNIQUE
+        string name "UNIQUE"
         string category
     }
 
     tags {
         int id PK
-        string name UNIQUE
+        string name "UNIQUE"
     }
 
     recipe_ingredients {
-        int recipe_id PK_FK
-        int ingredient_id PK_FK
+        int recipe_id PK "FK"
+        int ingredient_id PK "FK"
         float quantity
         string unit
     }
 
     recipe_tags {
-        int recipe_id PK_FK
-        int tag_id PK_FK
+        int recipe_id PK "FK"
+        int tag_id PK "FK"
     }
 ```
 
