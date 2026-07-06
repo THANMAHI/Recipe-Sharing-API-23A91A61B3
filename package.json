@@ -1,0 +1,21 @@
+{
+  "name": "recipe-sharing-api",
+  "version": "1.0.0",
+  "description": "Recipe Sharing REST API with Relational Database Integration",
+  "main": "src/app.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js",
+    "test": "node tests/api.test.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "sequelize": "^6.37.3",
+    "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  }
+}
