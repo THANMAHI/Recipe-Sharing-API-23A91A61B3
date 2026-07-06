@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recipe Sharing API Dashboard</title>
+  <!-- Modern Google Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    /* Premium Modern Dark Theme Design */
+    :root {
+      --bg: #090a0f;
+      --card-bg: #11131c;
+      --card-border: #1e2230;
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --success: #10b981;
+      --error: #ef4444;
+      --text: #f3f4f6;
+      --text-muted: #9ca3af;
+      --input-bg: #161925;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      line-height: 1.5;
+      padding-bottom: 80px;
+    }
+
+    header {
+      background: linear-gradient(135deg, #11131c 0%, #090a0f 100%);
+      border-bottom: 1px solid var(--card-border);
+      padding: 24px 5%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+    }
+
+    .logo-container h1 {
+      font-size: 24px;
+      font-weight: 700;
+      background: linear-gradient(to right, #818cf8, #c084fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .logo-container p {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .api-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 13px;
+      color: var(--success);
+      font-weight: 500;
+    }
+
+    .api-status::before {
+      content: '';
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      background-color: var(--success);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--success);
+    }
+
+    main {
+      max-width: 1400px;
+      margin: 40px auto 0;
+      padding: 0 24px;
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 32px;
+    }
+
+    @media (max-width: 1024px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Cards */
+    .card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      margin-bottom: 32px;
+      transition: var(--transition);
+    }
+
+    .card:hover {
+      border-color: #312e81;
+      transform: translateY(-2px);
+    }
+
+    .card h2 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      border-bottom: 1px solid var(--card-border);
+      padding-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Forms */
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      background-color: var(--input-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 14px;
+      outline: none;
+      transition: var(--transition);
+    }
+
+    input:focus, textarea:focus, select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+    }
+
+    .btn {
+      background-color: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      transition: var(--transition);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .btn-secondary {
+      background-color: transparent;
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+    }
+
+    .btn-secondary:hover {
+      background-color: rgba(255,255,255,0.05);
+      color: var(--text);
+    }
+
+    .btn-danger {
+      background-color: var(--error);
+    }
+    .btn-danger:hover {
+      background-color: #dc2626;
+    }
+
+    /* Auth details key area */
+    .key-display {
+      background-color: var(--input-bg);
+      border: 1px dashed var(--primary);
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 15px;
+      font-family: monospace;
+      font-size: 12px;
+      word-break: break-all;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .copy-btn {
+      background: rgba(99, 102, 241, 0.1);
+      border: 1px solid var(--primary);
+      color: var(--primary);
+      border-radius: 4px;
+      padding: 4px 8px;
+      font-size: 11px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .copy-btn:hover {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    /* Dynamic ingredients block in recipe form */
+    .ingredient-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr auto;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .remove-row {
+      background: none;
+      border: none;
+      color: var(--error);
+      cursor: pointer;
+      font-size: 16px;
+      padding: 0 4px;
+    }
+
+    /* Tags selection */
+    .tags-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .tag-chip {
+      background-color: var(--input-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 13px;
+      cursor: pointer;
+      user-select: none;
+      transition: var(--transition);
+    }
+
+    .tag-chip.selected {
+      background-color: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+
+    /* Filters section */
+    .filters-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 16px;
+      align-items: end;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 768px) {
+      .filters-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Recipe list */
+    .recipes-container {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+
+    .recipe-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      position: relative;
+      transition: var(--transition);
+    }
+
+    .recipe-card:hover {
+      border-color: #2b3042;
+    }
+
+    .recipe-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .recipe-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .recipe-meta {
+      display: flex;
+      gap: 16px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .recipe-desc {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    .recipe-relations {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      background: rgba(255, 255, 255, 0.01);
+      border-radius: 8px;
+      padding: 14px;
+      border: 1px solid var(--card-border);
+    }
+
+    @media (max-width: 600px) {
+      .recipe-relations {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .relation-title {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .relation-list {
+      list-style: none;
+      font-size: 13px;
+    }
+
+    .relation-list li {
+      margin-bottom: 4px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .recipe-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .recipe-tag {
+      background: rgba(99, 102, 241, 0.1);
+      color: #a5b4fc;
+      border: 1px solid rgba(99, 102, 241, 0.2);
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    .recipe-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      border-top: 1px solid var(--card-border);
+      padding-top: 16px;
+      margin-top: 8px;
+    }
+
+    .badge {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-weight: 600;
+    }
+
+    .badge-user {
+      background: rgba(192, 132, 252, 0.1);
+      color: #e9d5ff;
+      border: 1px solid rgba(192, 132, 252, 0.2);
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      padding: 16px 24px;
+      border-radius: 8px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      z-index: 1000;
+      transform: translateY(150%);
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+    }
+
+    .toast-success {
+      border-left: 4px solid var(--success);
+    }
+
+    .toast-error {
+      border-left: 4px solid var(--error);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo-container">
+      <h1>Recipe Sharing API</h1>
+      <p>Developer Testing Playground</p>
+    </div>
+    <div class="api-status">API Server Online</div>
+  </header>
+
+  <main>
+    <!-- Left Column: Controls and Add Forms -->
+    <div>
+      <!-- 1. Credentials Card -->
+      <div class="card">
+        <h2>🔒 Developer API Key</h2>
+        <div class="form-group">
+          <label for="current-key-input">Current X-API-Key (loads automatically)</label>
+          <input type="text" id="current-key-input" placeholder="Paste or register key to auto-load">
+        </div>
+        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">
+          Set key here to perform protected create, edit, and delete operations.
+        </p>
+
+        <h2>Register New Account</h2>
+        <form id="auth-form">
+          <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" required placeholder="e.g. chef_ramsay">
+          </div>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" required placeholder="e.g. gordon@ramsay.com">
+          </div>
+          <button type="submit" class="btn">Register & Get Key</button>
+        </form>
+
+        <div id="key-result" style="display: none;">
+          <div class="key-display">
+            <span id="key-value"></span>
+            <button class="copy-btn" onclick="copyKey()">Copy</button>
+          </div>
+          <p style="font-size: 11px; color: var(--success); margin-top: 6px;">
+            ⚠️ Save this key now! This is the only time you will see it.
+          </p>
+        </div>
+      </div>
+
+      <!-- 2. Recipe Creation Card -->
+      <div class="card">
+        <h2>🍳 Create a Recipe</h2>
+        <form id="recipe-form">
+          <div class="form-group">
+            <label for="title">Title *</label>
+            <input type="text" id="title" required placeholder="e.g. Margherita Pizza">
+          </div>
+          <div class="form-group">
+            <label for="description">Description</label>
+            <textarea id="description" rows="2" placeholder="Brief intro..."></textarea>
+          </div>
+          <div class="form-group">
+            <label for="instructions">Instructions *</label>
+            <textarea id="instructions" rows="4" required placeholder="Step by step..."></textarea>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;">
+            <div class="form-group">
+              <label for="prep-time">Prep Time (min) *</label>
+              <input type="number" id="prep-time" required min="0" value="10">
+            </div>
+            <div class="form-group">
+              <label for="cook-time">Cook Time (min) *</label>
+              <input type="number" id="cook-time" required min="0" value="20">
+            </div>
+            <div class="form-group">
+              <label for="servings">Servings *</label>
+              <input type="number" id="servings" required min="1" value="2">
+            </div>
+          </div>
+
+          <!-- Add Ingredients dynamically -->
+          <div class="form-group" style="margin-top: 10px;">
+            <label>Ingredients *</label>
+            <div id="recipe-ingredients-list">
+              <!-- Dynamically added ingredients will go here -->
+            </div>
+            <button type="button" class="btn btn-secondary" onclick="addIngredientRow()">+ Add Ingredient</button>
+          </div>
+
+          <!-- Select Tags -->
+          <div class="form-group" style="margin-top: 15px;">
+            <label>Tags</label>
+            <div id="tags-selector" class="tags-container">
+              <!-- Dynamically populated tags chips -->
+            </div>
+          </div>
+
+          <button type="submit" class="btn" style="margin-top: 15px;">Submit Recipe</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Right Column: Filters and Recipe List -->
+    <div>
+      <div class="card">
+        <h2>🔍 Filter Recipes</h2>
+        <div class="filters-grid">
+          <div class="form-group">
+            <label for="filter-tags">By Tags (comma separated names/IDs)</label>
+            <input type="text" id="filter-tags" placeholder="e.g. Vegan, Quick">
+          </div>
+          <div class="form-group">
+            <label for="filter-ingredients">By Ingredients</label>
+            <input type="text" id="filter-ingredients" placeholder="e.g. Salt, Rice">
+          </div>
+          <div class="form-group">
+            <label for="filter-max-cook">Max Cook Time (min)</label>
+            <input type="number" id="filter-max-cook" placeholder="e.g. 30">
+          </div>
+        </div>
+        <div style="display: flex; gap: 12px;">
+          <button class="btn" onclick="fetchRecipes()">Search / Apply Filters</button>
+          <button class="btn btn-secondary" onclick="clearFilters()" style="width: auto;">Clear</button>
+        </div>
+      </div>
+
+      <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
+        🍽️ Recipes
+        <span id="recipes-count" style="font-size: 13px; font-weight: 500; background: #1f2937; padding: 2px 8px; border-radius: 12px; color: var(--text-muted);">0 total</span>
+      </h2>
+      <div id="recipes-list-container" class="recipes-container">
+        <!-- Recipe cards render here -->
+      </div>
+    </div>
+  </main>
+
+  <div id="toast" class="toast">
+    <span id="toast-message">Notification message</span>
+  </div>
+
+  <script>
+    // Global lists
+    let availableIngredients = [];
+    let availableTags = [];
+    let selectedTagsForRecipe = [];
+
+    // On Load
+    window.addEventListener('DOMContentLoaded', async () => {
+      // Restore Key
+      const savedKey = localStorage.getItem('api_key');
+      if (savedKey) {
+        document.getElementById('current-key-input').value = savedKey;
+      }
+
+      await loadTaxonomy();
+      await fetchRecipes();
+    });
+
+    // Toast utility
+    function showToast(message, type = 'success') {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toast-message');
+      
+      toast.className = `toast toast-${type} show`;
+      toastMsg.textContent = message;
+
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3500);
+    }
+
+    // Load Tags and Ingredients
+    async function loadTaxonomy() {
+      try {
+        const resIngs = await fetch('/ingredients');
+        availableIngredients = await resIngs.json();
+
+        const resTags = await fetch('/tags');
+        availableTags = await resTags.json();
+
+        // Render Tag selector chips in form
+        const tagsContainer = document.getElementById('tags-selector');
+        tagsContainer.innerHTML = '';
+        availableTags.forEach(tag => {
+          const chip = document.createElement('div');
+          chip.className = 'tag-chip';
+          chip.textContent = tag.name;
+          chip.dataset.id = tag.id;
+          chip.onclick = () => toggleTagSelection(chip, tag.id);
+          tagsContainer.appendChild(chip);
+        });
+
+        // Initialize form with 1 ingredient row
+        addIngredientRow();
+      } catch (err) {
+        console.error('Error loading taxonomy:', err);
+        showToast('Failed to load ingredients/tags checklist.', 'error');
+      }
+    }
+
+    function toggleTagSelection(element, tagId) {
+      if (selectedTagsForRecipe.includes(tagId)) {
+        selectedTagsForRecipe = selectedTagsForRecipe.filter(id => id !== tagId);
+        element.classList.remove('selected');
+      } else {
+        selectedTagsForRecipe.push(tagId);
+        element.classList.add('selected');
+      }
+    }
+
+    // Add Dynamic Ingredient Row
+    function addIngredientRow() {
+      const container = document.getElementById('recipe-ingredients-list');
+      const rowId = 'ing-row-' + Date.now();
+      
+      const row = document.createElement('div');
+      row.className = 'ingredient-row';
+      row.id = rowId;
+
+      // Select dropdown
+      let selectHtml = `<select required class="ing-select"><option value="">-- Choose Ingredient --</option>`;
+      availableIngredients.forEach(ing => {
+        selectHtml += `<option value="${ing.id}">${ing.name} (${ing.category || 'Other'})</option>`;
+      });
+      selectHtml += `</select>`;
+
+      row.innerHTML = `
+        ${selectHtml}
+        <input type="number" step="any" required min="0" placeholder="Qty" class="ing-qty">
+        <input type="text" required placeholder="Unit (e.g. cups)" class="ing-unit">
+        <button type="button" class="remove-row" onclick="document.getElementById('${rowId}').remove()">&times;</button>
+      `;
+
+      container.appendChild(row);
+    }
+
+    // Register User
+    document.getElementById('auth-form').onsubmit = async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('username').value;
+      const email = document.getElementById('email').value;
+
+      try {
+        const res = await fetch('/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, email })
+        });
+        const data = await res.json();
+
+        if (res.ok) {
+          localStorage.setItem('api_key', data.apiKey);
+          document.getElementById('current-key-input').value = data.apiKey;
+          
+          document.getElementById('key-value').textContent = data.apiKey;
+          document.getElementById('key-result').style.display = 'block';
+          
+          showToast('Account registered successfully! API Key auto-loaded.');
+        } else {
+          showToast(data.message || 'Registration failed.', 'error');
+        }
+      } catch (err) {
+        showToast('Network error during registration.', 'error');
+      }
+    };
+
+    function copyKey() {
+      const text = document.getElementById('key-value').textContent;
+      navigator.clipboard.writeText(text);
+      showToast('API Key copied to clipboard!');
+    }
+
+    // Create Recipe
+    document.getElementById('recipe-form').onsubmit = async (e) => {
+      e.preventDefault();
+      const apiKey = document.getElementById('current-key-input').value.trim();
+      
+      if (!apiKey) {
+        showToast('Please register or enter an API Key first.', 'error');
+        return;
+      }
+
+      // Gather Ingredients
+      const ingRows = document.querySelectorAll('#recipe-ingredients-list .ingredient-row');
+      const ingredients = [];
+      ingRows.forEach(row => {
+        const id = row.querySelector('.ing-select').value;
+        const quantity = row.querySelector('.ing-qty').value;
+        const unit = row.querySelector('.ing-unit').value;
+        if (id && quantity && unit) {
+          ingredients.push({
+            id: parseInt(id),
+            quantity: parseFloat(quantity),
+            unit: unit
+          });
+        }
+      });
+
+      const body = {
+        title: document.getElementById('title').value,
+        description: document.getElementById('description').value,
+        instructions: document.getElementById('instructions').value,
+        prep_time: parseInt(document.getElementById('prep-time').value),
+        cook_time: parseInt(document.getElementById('cook-time').value),
+        servings: parseInt(document.getElementById('servings').value),
+        ingredients: ingredients,
+        tags: selectedTagsForRecipe
+      };
+
+      try {
+        const res = await fetch('/recipes', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-API-Key': apiKey
+          },
+          body: JSON.stringify(body)
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          showToast('Recipe created successfully!');
+          // Reset form
+          document.getElementById('recipe-form').reset();
+          document.getElementById('recipe-ingredients-list').innerHTML = '';
+          selectedTagsForRecipe = [];
+          document.querySelectorAll('.tag-chip').forEach(c => c.classList.remove('selected'));
+          addIngredientRow();
+          // Reload
+          await fetchRecipes();
+        } else {
+          showToast(data.message || data.error || 'Failed to create recipe.', 'error');
+        }
+      } catch (err) {
+        showToast('Network error while creating recipe.', 'error');
+      }
+    };
+
+    // Fetch and list recipes
+    async function fetchRecipes() {
+      const tags = document.getElementById('filter-tags').value;
+      const ingredients = document.getElementById('filter-ingredients').value;
+      const maxCook = document.getElementById('filter-max-cook').value;
+
+      const params = new URLSearchParams();
+      if (tags) params.append('tags', tags);
+      if (ingredients) params.append('ingredients', ingredients);
+      if (maxCook) params.append('max_cook_time', maxCook);
+
+      const url = '/recipes?' + params.toString();
+
+      try {
+        const res = await fetch(url);
+        const recipes = await res.json();
+        
+        const countSpan = document.getElementById('recipes-count');
+        countSpan.textContent = `${recipes.length} recipe${recipes.length === 1 ? '' : 's'} found`;
+
+        const container = document.getElementById('recipes-list-container');
+        container.innerHTML = '';
+
+        if (recipes.length === 0) {
+          container.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 40px; border: 1px dashed var(--card-border); border-radius: 12px;">No recipes match the criteria.</div>`;
+          return;
+        }
+
+        recipes.forEach(recipe => {
+          const card = document.createElement('div');
+          card.className = 'recipe-card';
+
+          // Tags html
+          let tagsHtml = '';
+          recipe.tags.forEach(t => {
+            tagsHtml += `<span class="recipe-tag">${t.name}</span>`;
+          });
+
+          // Ingredients html
+          let ingsHtml = '';
+          recipe.ingredients.forEach(i => {
+            ingsHtml += `<li><span>${i.name}</span> <span style="font-weight: 600; color: #a5b4fc;">${i.quantity} ${i.unit}</span></li>`;
+          });
+
+          card.innerHTML = `
+            <div class="recipe-header">
+              <div>
+                <h3 class="recipe-title">${escapeHtml(recipe.title)}</h3>
+                <div class="recipe-meta" style="margin-top: 4px;">
+                  <span>By <strong class="badge badge-user">${escapeHtml(recipe.author ? recipe.author.username : 'Unknown')}</strong></span>
+                  <span>⏱️ Cook: ${recipe.cook_time}m / Prep: ${recipe.prep_time}m</span>
+                  <span>🍽️ Serves: ${recipe.servings}</span>
+                </div>
+              </div>
+            </div>
+            ${recipe.description ? `<p class="recipe-desc">${escapeHtml(recipe.description)}</p>` : ''}
+            <div class="recipe-relations">
+              <div>
+                <div class="relation-title">Ingredients</div>
+                <ul class="relation-list">
+                  ${ingsHtml || '<li>None</li>'}
+                </ul>
+              </div>
+              <div>
+                <div class="relation-title">Instructions</div>
+                <p style="font-size: 13px; color: var(--text-muted); white-space: pre-line;">${escapeHtml(recipe.instructions)}</p>
+              </div>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div class="recipe-tags">
+                ${tagsHtml || '<span style="color: var(--text-muted); font-size: 11px;">No Tags</span>'}
+              </div>
+              <button class="copy-btn btn-danger" onclick="deleteRecipe(${recipe.id})" style="background: rgba(239, 68, 68, 0.1); border-color: var(--error); color: var(--error); padding: 5px 10px;">Delete</button>
+            </div>
+          `;
+
+          container.appendChild(card);
+        });
+      } catch (err) {
+        console.error('Error fetching recipes:', err);
+        showToast('Error retrieving recipes.', 'error');
+      }
+    }
+
+    // Delete recipe
+    async function deleteRecipe(id) {
+      const apiKey = document.getElementById('current-key-input').value.trim();
+      if (!apiKey) {
+        showToast('Authorization Key required to delete recipes.', 'error');
+        return;
+      }
+
+      if (!confirm('Are you sure you want to delete this recipe?')) return;
+
+      try {
+        const res = await fetch(`/recipes/${id}`, {
+          method: 'DELETE',
+          headers: { 'X-API-Key': apiKey }
+        });
+
+        if (res.status === 204) {
+          showToast('Recipe deleted successfully.');
+          await fetchRecipes();
+        } else if (res.status === 403) {
+          showToast('Forbidden: You can only delete recipes that you created!', 'error');
+        } else {
+          const data = await res.json();
+          showToast(data.message || 'Failed to delete recipe.', 'error');
+        }
+      } catch (err) {
+        showToast('Network error during deletion.', 'error');
+      }
+    }
+
+    // Clear filters
+    function clearFilters() {
+      document.getElementById('filter-tags').value = '';
+      document.getElementById('filter-ingredients').value = '';
+      document.getElementById('filter-max-cook').value = '';
+      fetchRecipes();
+    }
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      return text
+        .toString()
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    // Save key to localstorage if changed manually
+    document.getElementById('current-key-input').addEventListener('input', (e) => {
+      localStorage.setItem('api_key', e.target.value.trim());
+    });
+  </script>
+</body>
+</html>
