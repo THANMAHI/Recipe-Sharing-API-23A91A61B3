@@ -69,9 +69,22 @@ erDiagram
 
 ---
 
-## Setup & Running Locally
+## Setup & Running
 
-### Prerequisites
+### Running with Docker (Recommended)
+You can launch the entire system (Node.js API + PostgreSQL database) with a single command:
+
+1. Ensure you have **Docker** and **Docker Compose** installed.
+2. Run:
+   ```bash
+   docker-compose up --build
+   ```
+
+This will build the Node.js application container, spin up a PostgreSQL database container, wait for the database to become healthy, synchronize the database tables, automatically run the seeder, and expose the API at `http://localhost:3000`. You can open `http://localhost:3000/dashboard` directly in your web browser.
+
+### Running Locally without Docker
+
+#### Prerequisites
 - [Node.js](https://nodejs.org/) (v18.0.0 or higher recommended)
 - [npm](https://www.npmjs.com/) (usually bundled with Node.js)
 
